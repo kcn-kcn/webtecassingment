@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TechZone — Mini Store</title>
+
+  <!-- Google Font (optional) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg-1: #b85727;
+      --card: #61a4dbac;
+      --accent: #5c9aea;
+      --accent-2: #0463b3;
+      --muted: #6b7280;
+      --glass: rgba(143, 177, 8, 0.7);
+      --success: #16a34a;
+      --danger: #ef4444;
+      --radius: 14px;
+      --shadow-sm: 0 6px 20px rgba(11,99,216,0.08);
+      --shadow-lg: 0 18px 50px rgba(2,6,23,0.12);
+      --max-width: 1100px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body {
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, #ece5eb 0%, #f9fbff 100%);
+      color: #0f1724;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+      padding-bottom:60px;
+    }
+
+    /* ------- Top nav/header ------- */
+    header.site-header{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter: blur(6px);
+      background: linear-gradient(90deg, rgba(11,99,216,0.95), rgba(4,99,179,0.95));
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(2,6,23,0.08);
+    }
+    .topbar{
+      max-width:var(--max-width);
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      gap:20px;
+      padding:14px;
+      justify-content:space-between;
+    }
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      text-decoration:none;
+      color:white;
+    }
+    .logo {
+      width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#fff 0%, rgba(255,255,255,0.15) 100%);display:flex;align-items:center;justify-content:center;color:var(--accent-2);font-weight:700;
+      box-shadow:0 6px 18px rgba(2,6,23,0.12);
+    }
+    .brand h1{font-size:18px;margin:0;font-weight:600;letter-spacing:0.2px}
+    .nav-actions{display:flex;align-items:center;gap:14px}
+    .search-wrap{display:flex;align-items:center;background:rgba(255,255,255,0.12);padding:6px;border-radius:10px;min-width:300px}
+    .search-wrap input{border:0;background:transparent;color:white;padding:8px 10px;outline:none;width:100%}
+    .category-select{background:rgba(255,255,255,0.08);color:white;padding:8px 10px;border-radius:10px;border:0;outline:none}
+
+    .icon-btn{
+      background: rgba(255,255,255,0.12);
+      color:white;
+      border:0;
+      padding:8px 12px;
+      border-radius:10px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      cursor:pointer;
+    }
+    .badge{
+      background: #ffdd57;
+      color:#07314a;
+      font-size:12px;
+      font-weight:700;
+      padding:3px 8px;
+      border-radius:12px;
+      margin-left:6px;
+    }
+
+    /* ------- Main layout ------- */
+    .main{
+      max-width:var(--max-width);
+      margin:28px auto;
+      padding:0 20px;
+      display:grid;
+      grid-template-columns: 1fr 320px;
+      gap:28px;
+    }
+
+    /* left column - products and filters */
+    .catalog{
+      background:transparent;
+      border-radius:12px;
+    }
+
+    .controls{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:18px;
+    }
+    .controls .title{font-size:20px;font-weight:600;color:#0f1724}
+    .controls .small{color:var(--muted);font-size:14px}
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
+      gap:20px;
+    }
+
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:12px;
+      box-shadow:var(--shadow-sm);
+      transition: transform .35s cubic-bezier(.2,.9,.3,1), box-shadow .35s;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      overflow:hidden;
+    }
+    .card:hover{transform:translateY(-8px);box-shadow:var(--shadow-lg)}
+    .card .imgwrap{border-radius:12px;overflow:hidden;height:150px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#f6f8ff, #eef4ff)}
+    .card img{width:100%;height:100%;object-fit:cover;display:block}
+    .card h3{margin:0;font-size:16px}
+    .meta{display:flex;justify-content:space-between;align-items:center;margin-top:auto}
+    .price{font-weight:700;color:var(--accent-2)}
+    .card .actions{display:flex;gap:10px;align-items:center}
+
+    /* ------- Right column - cart panel (mini) ------- */
+    .cart-panel{
+      background:linear-gradient(180deg,#ffffff,#f7fbff);
+      border-radius:14px;
+      padding:16px;
+      box-shadow:var(--shadow-sm);
+      height:fit-content;
+      position:sticky;
+      top:92px;
+    }
+    .cart-panel h2{margin:0 0 12px;font-size:18px;color:var(--accent-2)}
+    .cart-list{display:flex;flex-direction:column;gap:10px;max-height:420px;overflow:auto;padding-right:6px}
+    .cart-item{
+      display:flex;gap:12px;align-items:center;background:rgba(6,20,35,0.02);padding:8px;border-radius:10px;
+    }
+    .cart-item img{width:56px;height:56px;border-radius:8px;object-fit:cover}
+    .cart-item .cmeta{flex:1}
+    .cart-item .qty{display:flex;gap:6px;align-items:center}
+    .qty button{border:0;background:transparent;padding:6px;border-radius:6px;cursor:pointer}
+    .small-muted{font-size:13px;color:var(--muted)}
+    .cart-bottom{margin-top:12px;border-top:1px dashed rgba(11,99,216,0.08);padding-top:12px;display:flex;flex-direction:column;gap:8px}
+    .checkout-btn{
+      background: linear-gradient(90deg,var(--accent),var(--accent-2));
+      color:rgb(255, 255, 255);padding:12px;border-radius:12px;border:0;font-weight:700;cursor:pointer;
+      box-shadow:0 8px 24px rgba(11,99,216,0.18);
+    }
+    .clear-btn{background:transparent;border:1px solid rgba(11,99,216,0.12);padding:8px;border-radius:10px;cursor:pointer}
+
+    /* ------- Product detail modal ------- */
+    .modal{
+      position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,0.4);
+      opacity:0;pointer-events:none;transition:opacity 250ms;
+      z-index:80;
+    }
+    .modal.show{opacity:1;pointer-events:auto}
+    .modal-card{width:92%;max-width:880px;background:var(--card);border-radius:12px;padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .modal-card img{width:100%;height:360px;object-fit:cover;border-radius:10px}
+    .modal-card .info h3{margin-top:0}
+    .close-x{background:#efefef;border-radius:8px;padding:6px;border:0;cursor:pointer}
+
+    /* ------- Toast ------- */
+    .toast{
+      position:fixed;
+      right:24px;
+      bottom:24px;
+      background:linear-gradient(90deg,var(--accent-2),var(--accent));
+      color:rgb(255, 255, 255);
+      padding:12px 18px;
+      border-radius:12px;
+      box-shadow:0 10px 30px rgba(2,6,23,0.18);
+      transform:translateY(20px);
+      opacity:0;
+      transition:all .35s;
+      z-index:120;
+      display:flex;gap:10px;align-items:center;
+    }
+    .toast.show{opacity:1;transform:translateY(0)}
+
+    /* ------- Footer ------- */
+    footer.site-footer{max-width:var(--max-width);margin:36px auto 80px;padding:18px 20px;border-radius:12px;background:linear-gradient(180deg,#f7fbff,#ffffff);box-shadow:var(--shadow-sm);display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .socials a{text-decoration:none;color:var(--accent-2);margin-left:10px;font-weight:700}
+
+    /* ------- Small screens ------- */
+    @media (max-width:980px){
+      .main{grid-template-columns:1fr}
+      .cart-panel{position:static;top:auto}
+      .modal-card{grid-template-columns:1fr}
+      .modal-card img{height:280px}
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header" role="banner">
+    <div class="topbar">
+      <a href="#" class="brand" aria-label="TechZone Home">
+        <div class="logo">TZ</div>
+        <div>
+          <h1>TechZone</h1>
+          <div style="font-size:12px;color:rgba(255,255,255,0.9);margin-top:2px">Electronics & IT • Mini Store</div>
+        </div>
+      </a>
+
+      <div style="flex:1;margin-left:20px;margin-right:20px;display:flex;align-items:center;gap:12px">
+        <div class="search-wrap" style="flex:1">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="opacity:.9;margin-left:8px">
+            <path d="M21 21l-4.35-4.35" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+            <circle cx="11" cy="11" r="5" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <input id="searchInput" placeholder="Search products (e.g. smartphone, laptop)..." aria-label="Search products">
+        </div>
+
+        <select id="categorySelect" class="category-select" aria-label="Filter by category">
+          <option value="all">All categories</option>
+          <option value="phones">Phones</option>
+          <option value="laptops">Laptops</option>
+          <option value="audio">Audio</option>
+          <option value="accessories">Accessories</option>
+        </select>
+      </div>
+
+      <div class="nav-actions">
+        <button title="View Cart" class="icon-btn" id="openCartBtn" aria-haspopup="true" aria-controls="cartPanel">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6h15l-1.5 9h-12z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Cart <span id="cartCount" class="badge" aria-live="polite">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main" role="main">
+    <!-- LEFT: Catalog -->
+    <section class="catalog">
+      <div class="controls">
+        <div>
+          <div class="title">Products</div>
+          <div class="small">High-quality electronics — curated list</div>
+        </div>
+        <div class="small" id="resultsInfo">Showing 0 items</div>
+      </div>
+
+      <div class="grid" id="productGrid" aria-live="polite">
+        <!-- Product cards rendered by JS -->
+      </div>
+    </section>
+
+    <!-- RIGHT: Cart panel -->
+    <aside class="cart-panel" id="cartPanel" role="complementary" aria-label="Shopping cart">
+      <h2>Your Cart</h2>
+      <div class="cart-list" id="cartList">
+        <div class="small-muted">No items yet — add some products</div>
+      </div>
+
+      <div class="cart-bottom">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="small-muted">Subtotal</div>
+          <div id="subtotal" style="font-weight:700;color:var(--accent-2)">$0</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="clear-btn" id="clearCartBtn">Clear</button>
+          <button class="checkout-btn" id="checkoutBtn">Checkout</button>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Product Modal -->
+  <div class="modal" id="prodModal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-card" role="document">
+      <div>
+        <img id="modalImg" src="" alt="">
+      </div>
+      <div class="info">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3 id="modalTitle">Product</h3>
+          <button class="close-x" id="closeModalBtn" aria-label="Close">✕</button>
+        </div>
+        <p id="modalDesc" class="small-muted">Description</p>
+        <div style="margin-top:14px;font-size:20px;font-weight:700;color:var(--accent-2)" id="modalPrice">$0</div>
+
+        <div style="margin-top:18px;display:flex;gap:10px;align-items:center">
+          <label style="font-size:14px;color:var(--muted)">Qty:</label>
+          <input id="modalQty" type="number" min="1" value="1" style="width:72px;padding:8px;border-radius:8px;border:1px solid #e6eefc">
+        </div>
+
+        <div style="margin-top:18px;display:flex;gap:8px">
+          <button class="checkout-btn" id="modalAddBtn">Add to cart</button>
+          <button class="clear-btn" id="modalCloseAdd">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div>
+      <strong>TechZone</strong> — built for your mini-project. <span class="small-muted">Delivering affordable electronics.</span>
+    </div>
+    <div class="socials">
+      <span class="small-muted">Designed by KudzaiChris</span>
+      <a href="#" title="GitHub" aria-label="GitHub profile">GH</a>
+      <a href="#" title="LinkedIn" aria-label="LinkedIn profile">IN</a>
+    </div>
+  </footer>
+
+  <script>
+    /*******************************
+     * Data & State
+     *******************************/
+    const PRODUCTS = [
+      { id: "p1", title: "Samsung S25 Ultra", price: 1299, category: "phones",
+        img: "ac58bf52c444c982ee1fbc372a9d6e7a.jpg",
+        desc: "A fast, reliable smartphone with great camera and battery life." },
+      { id: "p2", title: "Lenovo Yoga i7", price: 3299, category: "laptops",
+        img: "c61e5119419f6b31790d9f0c8eeac36f.jpg",
+        desc: "Lightweight laptop with performance for development and multimedia." },
+      { id: "p3", title: "Wireless Headphones", price: 99, category: "audio",
+        img: "61562c54d8b5cfc4df4ba325fb96965c.jpg",
+        desc: "Comfortable Bluetooth headphones with noise isolation." },
+      { id: "p4", title: "Mechanical Keyboard", price: 199, category: "accessories",
+        img: "8b5c03902ff4fb71250270bb915c121a.jpg",
+        desc: "Tactile mechanical keyboard with RGB lighting." },
+      { id: "p5", title: "Charger", price: 10, category: "accessories",
+        img: "663c26c518c7bcb74cfdce8683e9c184.jpg",
+        desc: "High-capacity charger for phones and tablets." }
+    ];
+
+    let state = {
+      products: PRODUCTS.slice(),
+      cart: JSON.parse(localStorage.getItem('tz_cart')||'[]'),
+      query: '',
+      category: 'all'
+    };
+
+    /*******************************
+     * Helpers
+     *******************************/
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+    function saveCart(){
+      localStorage.setItem('tz_cart', JSON.stringify(state.cart));
+    }
+
+    function showToast(msg, time=2200){
+      const t = $('#toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(()=> t.classList.remove('show'), time);
+    }
+
+    function formatMoney(n){ return `$${Number(n).toFixed(2)}`; }
+
+    /*******************************
+     * Rendering
+     *******************************/
+    function renderProducts(){
+      const grid = $('#productGrid');
+      grid.innerHTML = '';
+      const filtered = state.products.filter(p=>{
+        const q = state.query.trim().toLowerCase();
+        const catOk = (state.category === 'all') || p.category === state.category;
+        const qOk = !q || p.title.toLowerCase().includes(q) || (p.desc && p.desc.toLowerCase().includes(q));
+        return catOk && qOk;
+      });
+
+      $('#resultsInfo').textContent = `Showing ${filtered.length} item${filtered.length !== 1 ? 's' : ''}`;
+
+      filtered.forEach(p=>{
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="imgwrap" role="button" tabindex="0" data-id="${p.id}">
+            <img src="${p.img}" alt="${p.title}">
+          </div>
+          <h3>${p.title}</h3>
+          <div class="small-muted">${p.desc.substring(0,80)}${p.desc.length>80?'...':''}</div>
+          <div class="meta">
+            <div class="price">${formatMoney(p.price)}</div>
+            <div class="actions">
+              <button class="icon-btn" data-id="${p.id}" title="View">View</button>
+              <button class="icon-btn add" data-id="${p.id}" title="Add to cart">Add</button>
+            </div>
+          </div>`;
+        grid.appendChild(card);
+      });
+      // attach events
+      $$('.card .imgwrap').forEach(el=>el.addEventListener('click', e=>openModal(el.dataset.id)));
+      $$('.card .imgwrap').forEach(el=>el.addEventListener('keydown', e=>{ if(e.key==='Enter') openModal(el.dataset.id) }));
+      $$('.card .actions .icon-btn.add').forEach(btn=>btn.addEventListener('click', e=>addToCartById(e.currentTarget.dataset.id)));
+      $$('.card .actions .icon-btn:not(.add)').forEach(btn=>btn.addEventListener('click', e=>openModal(e.currentTarget.dataset.id)));
+    }
+
+    function renderCart(){
+      const list = $('#cartList');
+      list.innerHTML = '';
+      if(state.cart.length===0){
+        list.innerHTML = '<div class="small-muted">Your cart is empty. Add products to see them here.</div>';
+        $('#subtotal').textContent = '$0';
+        $('#cartCount').textContent = 0;
+        return;
+      }
+      state.cart.forEach((item,index)=>{
+        const prod = PRODUCTS.find(p=>p.id===item.id);
+        const el = document.createElement('div');
+        el.className = 'cart-item';
+        el.innerHTML = `
+          <img src="${prod.img}" alt="${prod.title}">
+          <div class="cmeta">
+            <div style="font-weight:700">${prod.title}</div>
+            <div class="small-muted">${formatMoney(prod.price)}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+            <div class="qty">
+              <button aria-label="decrease" data-index="${index}" class="qty-decrease">−</button>
+              <div style="min-width:28px;text-align:center">${item.qty}</div>
+              <button aria-label="increase" data-index="${index}" class="qty-increase">+</button>
+            </div>
+            <button class="clear-btn remove-item" data-index="${index}" style="padding:6px 8px">Remove</button>
+          </div>`;
+        list.appendChild(el);
+      });
+
+      // attach qty handlers
+      $$('.qty-decrease').forEach(b=>b.addEventListener('click', e=>{
+        const i=+e.currentTarget.dataset.index;
+        if(state.cart[i].qty>1) state.cart[i].qty--;
+        else state.cart.splice(i,1);
+        saveCart(); renderCart();
+      }));
+      $$('.qty-increase').forEach(b=>b.addEventListener('click', e=>{
+        const i=+e.currentTarget.dataset.index; state.cart[i].qty++; saveCart(); renderCart();
+      }));
+      $$('.remove-item').forEach(b=>b.addEventListener('click', e=>{
+        const i=+e.currentTarget.dataset.index; state.cart.splice(i,1); saveCart(); renderCart();
+      }));
+
+      const subtotal = state.cart.reduce((s,it)=>s + (it.qty * (PRODUCTS.find(p=>p.id===it.id).price)), 0);
+      $('#subtotal').textContent = formatMoney(subtotal);
+      $('#cartCount').textContent = state.cart.reduce((s,i)=>s+i.qty,0);
+    }
+
+    /*******************************
+     * Cart actions
+     *******************************/
+    function addToCartById(id, qty=1){
+      const idx = state.cart.findIndex(c=>c.id===id);
+      if(idx >= 0) state.cart[idx].qty += qty;
+      else state.cart.push({ id, qty });
+      saveCart();
+      renderCart();
+      showToast('Added to cart');
+    }
+
+    function addToCartFromModal(){
+      const id = $('#modalAddBtn').dataset.id;
+      const qty = Math.max(1, Number($('#modalQty').value || 1));
+      addToCartById(id, qty);
+      closeModal();
+    }
+
+    /*******************************
+     * Modal: view product detail
+     *******************************/
+    function openModal(id){
+      const p = PRODUCTS.find(x=>x.id===id);
+      if(!p) return;
+      $('#modalImg').src = p.img;
+      $('#modalImg').alt = p.title;
+      $('#modalTitle').textContent = p.title;
+      $('#modalDesc').textContent = p.desc;
+      $('#modalPrice').textContent = formatMoney(p.price);
+      $('#modalQty').value = 1;
+      $('#modalAddBtn').dataset.id = id;
+      $('#prodModal').classList.add('show');
+      $('#prodModal').setAttribute('aria-hidden','false');
+    }
+    function closeModal(){
+      $('#prodModal').classList.remove('show');
+      $('#prodModal').setAttribute('aria-hidden','true');
+    }
+
+    /*******************************
+     * Checkout & Clear
+     *******************************/
+    function clearCart(){
+      state.cart = [];
+      saveCart();
+      renderCart();
+      showToast('Cart cleared');
+    }
+
+    function checkout(){
+      if(state.cart.length===0){
+        showToast('Cart is empty');
+        return;
+      }
+      // Simple checkout flow: show confirmation and clear cart
+      const total = state.cart.reduce((s,it)=>s + (it.qty * (PRODUCTS.find(p=>p.id===it.id).price)), 0);
+      if(confirm(`Confirm checkout — Total ${formatMoney(total)} ?`)){
+        // Simulate success
+        state.cart = [];
+        saveCart();
+        renderCart();
+        showToast('Thanks — order placed!');
+      }
+    }
+
+    /*******************************
+     * Search & category
+     *******************************/
+    $('#searchInput').addEventListener('input', e=>{
+      state.query = e.target.value;
+      renderProducts();
+    });
+    $('#categorySelect').addEventListener('change', e=>{
+      state.category = e.target.value;
+      renderProducts();
+    });
+
+    /*******************************
+     * UI events
+     *******************************/
+    $('#openCartBtn').addEventListener('click', ()=> {
+      // scroll to cart panel on small screens, or flash it
+      const cp = document.getElementById('cartPanel');
+      cp.scrollIntoView({behavior:'smooth', block:'start'});
+      cp.animate([{transform: 'translateY(-6px)'},{transform:'translateY(0)'}],{duration:300});
+    });
+
+    $('#clearCartBtn').addEventListener('click', ()=> {
+      if(confirm('Clear cart?')) clearCart();
+    });
+    $('#checkoutBtn').addEventListener('click', checkout);
+
+    $('#closeModalBtn').addEventListener('click', closeModal);
+    $('#modalCloseAdd').addEventListener('click', closeModal);
+    $('#modalAddBtn').addEventListener('click', addToCartFromModal);
+
+    // keyboard close modal on Esc
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+    // toast helper
+    function showToast(msg){
+      const t = $('#toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(()=> t.classList.remove('show'), 2200);
+    }
+
+    /*******************************
+     * Init
+     *******************************/
+    (function init(){
+      renderProducts();
+      // If cart in storage, ensure structure {id,qty}
+      state.cart = state.cart.map(c=>({id:c.id, qty:c.qty||1}));
+      renderCart();
+      // show initial small animation
+      setTimeout(()=> document.querySelectorAll('.card').forEach((c,i)=>c.style.transitionDelay = `${i*30}ms`), 80);
+    })();
+
+  </script>
+</body>
+</html>
+
+
